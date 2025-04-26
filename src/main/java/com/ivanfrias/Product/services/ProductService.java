@@ -79,4 +79,12 @@ public class ProductService {
         }
         return productEntityProductDTOMapper.productEntityToProductDTO(productEntity);
     }
+
+    public List<ProductDTO> getProductByStoreId(Long storeId) {
+        List<ProductEntity> productEntities = productRepository.getProductByStoreId(storeId);
+        if(CollectionUtils.isEmpty(productEntities)){
+            throw new NotFoundException("No hay productos para la store seleccionada.");
+        }
+        return productEntityProductDTOMapper.productEntityListToProductDTOList(productEntities);
+    }
 }

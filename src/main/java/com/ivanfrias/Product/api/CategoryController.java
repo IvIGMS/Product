@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/categories")
+@RequestMapping("api/v1")
 @RequiredArgsConstructor
 public class CategoryController implements CategoriesApi {
     private final CategoryService categoryService;
@@ -43,5 +43,10 @@ public class CategoryController implements CategoriesApi {
     public ResponseEntity<Void> deleteCategoryById(Long categoryId) {
         categoryService.deleteById(categoryId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<List<CategoryDTO>> getCategoriesByStoreId(Long storeId) {
+        return ResponseEntity.ok(categoryService.getCategoriesByStoreId(storeId));
     }
 }

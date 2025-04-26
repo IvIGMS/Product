@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/products")
+@RequestMapping("api/v1")
 @RequiredArgsConstructor
 public class ProductController implements ProductsApi {
 
@@ -44,4 +44,11 @@ public class ProductController implements ProductsApi {
     public ResponseEntity<ProductDTO> updateProductById(Long productId, ProductRequestDTO productRequestDTO) {
         return ResponseEntity.ok(productService.updateProductById(productId, productRequestDTO));
     }
+
+    @Override
+    public ResponseEntity<List<ProductDTO>> getProductByStoreId(Long storeId) {
+        return ResponseEntity.ok(productService.getProductByStoreId(storeId));
+    }
+
+
 }

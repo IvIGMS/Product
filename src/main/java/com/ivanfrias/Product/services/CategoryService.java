@@ -83,4 +83,12 @@ public class CategoryService {
         }
         return categoryEntityCategoryDTOMapper.categoryEntityToCategoryDTO(categoryEntity);
     }
+
+    public List<CategoryDTO> getCategoriesByStoreId(Long storeId) {
+        List<CategoryEntity> categoryEntities = categoryRepository.getCategoriesByStoreId(storeId);
+        if(CollectionUtils.isEmpty(categoryEntities)) {
+            throw new NotFoundException("No hay categorías vinculadas a esta Store");
+        }
+        return categoryEntityCategoryDTOMapper.categoryEntityListTocategoryDTOList(categoryEntities);
+    }
 }
