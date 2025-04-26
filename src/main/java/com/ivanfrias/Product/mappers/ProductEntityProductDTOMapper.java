@@ -18,6 +18,7 @@ public interface ProductEntityProductDTOMapper {
 
     @Mapping(target = "createdAt", expression = "java(mapZonedDateTimeToOffset(productEntity.getCreatedAt()))")
     @Mapping(target = "updatedAt", expression = "java(mapZonedDateTimeToOffset(productEntity.getUpdatedAt()))")
+    @Mapping(target = "categoryId", source = "productEntity.category.id")
     ProductDTO productEntityToProductDTO(ProductEntity productEntity);
 
     List<ProductEntity> productDTOListToProductEntityList(List<ProductDTO> productDTOS);

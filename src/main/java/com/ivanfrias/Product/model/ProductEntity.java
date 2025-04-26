@@ -1,5 +1,6 @@
 package com.ivanfrias.Product.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,14 +21,19 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String productName;
 
     @Column(nullable = false)
     private BigDecimal price;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "category_id")
+    private CategoryEntity category;
+
     @Column(nullable = false)
-    private Long categoryId;
+    private Long storeId;
 
     @CreationTimestamp
     @Column(updatable = false)

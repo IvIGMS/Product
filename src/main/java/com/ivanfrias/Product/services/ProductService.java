@@ -4,6 +4,7 @@ import com.ivanfrias.Product.exceptions.DataBaseErrorException;
 import com.ivanfrias.Product.exceptions.NotFoundException;
 import com.ivanfrias.Product.mappers.ProductEntityProductDTOMapper;
 import com.ivanfrias.Product.mappers.ProductEntityProductRequestDTOMapper;
+import com.ivanfrias.Product.model.CategoryEntity;
 import com.ivanfrias.Product.model.ProductEntity;
 import com.ivanfrias.Product.repositories.ProductRepository;
 import com.ivanfrias.products.model.ProductDTO;
@@ -21,19 +22,23 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductEntityProductDTOMapper productEntityProductDTOMapper;
     private final ProductEntityProductRequestDTOMapper productEntityProductRequestDTOMapper;
+    private final CategoryService categoryService;
 
     public ProductDTO createProduct(ProductRequestDTO productRequestDTO) {
         try{
             ProductEntity productEntityToBeSaved = productEntityProductRequestDTOMapper.productRequestDTOToProductEntity(productRequestDTO);
+            productEntityToBeSaved.setCategory(categoryService.getCategoryEntityById(productRequestDTO.getCategoryId()));
             ProductEntity productEntitySaved = productRepository.save(productEntityToBeSaved);
             return productEntityProductDTOMapper.productEntityToProductDTO(productEntitySaved);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("El id de la categoría no pertecene a ninguna categoría");
         } catch (Exception e){
             throw new DataBaseErrorException("Error al introducir el producto en la base de datos");
         }
     }
 
     public void deleteById(Long productId) {
-        ProductDTO productDTO = getById(productId);
+        getById(productId);
         try {
             productRepository.deleteById(productId);
         } catch (Exception e){
@@ -66,7 +71,8 @@ public class ProductService {
             productEntity = productEntityOptional.get();
             productEntity.setProductName(productRequestDTO.getProductName());
             productEntity.setPrice(productRequestDTO.getPrice());
-            productEntity.setCategoryId(productRequestDTO.getCategoryId());
+            productEntity.setCategory(categoryService.getCategoryEntityById(productRequestDTO.getCategoryId()));
+            productEntity.setStoreId(productRequestDTO.getStoreId());
             productRepository.save(productEntity);
         } else {
             throw new NotFoundException("No existe una producto con el id indicado");

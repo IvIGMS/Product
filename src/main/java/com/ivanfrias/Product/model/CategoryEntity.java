@@ -1,12 +1,13 @@
 package com.ivanfrias.Product.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -20,8 +21,15 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String categoryName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+    @JsonManagedReference
+    private List<ProductEntity> products;
+
+    @Column(nullable = false)
+    private Long storeId;
 
     @CreationTimestamp
     @Column(updatable = false)
