@@ -1,11 +1,18 @@
 package com.ivanfrias.Product.api;
 
+import com.ivanfrias.Product.api.utils.PaginationUtils;
 import com.ivanfrias.Product.services.ProductService;
 import com.ivanfrias.products.api.ProductsApi;
 
+import com.ivanfrias.products.model.PagedResponse;
+import com.ivanfrias.products.model.PagedResponseProductDTO;
 import com.ivanfrias.products.model.ProductDTO;
 import com.ivanfrias.products.model.ProductRequestDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +43,8 @@ public class ProductController implements ProductsApi {
     }
 
     @Override
-    public ResponseEntity<List<ProductDTO>> getProducts() {
-        return ResponseEntity.ok(productService.getProducts());
+    public ResponseEntity<List<ProductDTO>> getProductsFilter(String productName, String categoryName, Double minPrice, Double maxPrice, Long storeId) {
+        return ResponseEntity.ok(productService.getProductsFilter(productName, categoryName, minPrice, maxPrice, storeId));
     }
 
     @Override
@@ -50,5 +57,21 @@ public class ProductController implements ProductsApi {
         return ResponseEntity.ok(productService.getProductByStoreId(storeId));
     }
 
+    @Override
+    public ResponseEntity<PagedResponseProductDTO> getPagedProductsFilter(
+            String productName,
+            String categoryName,
+            Double minPrice,
+            Double maxPrice,
+            Long storeId,
+            Integer pageNumberQueryParam,
+            Integer pageSizeQueryParam,
+            String sortByQueryParam
+    ) {
+        Pageable pageable = PaginationUtils.createPageable(pageNumberQueryParam, pageSizeQueryParam, sortByQueryParam);
 
+        Page<ProductDTO> productDTOlist = productService.getPagedProductsFilter(productName, categoryName, minPrice, maxPrice, storeId, pageable);
+
+        return ResponseEntity.ok(PaginationUtils.fromPage(productDTOlist));
+    }
 }

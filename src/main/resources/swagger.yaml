@@ -1,8 +1,34 @@
 openapi: 3.0.2
 info:
-  title: Microservicio de Products
+  title: Products
   version: v1
 paths:
+  /products/paged:
+    get:
+      summary: Get a list of paged products
+      operationId: getPagedProductsFilter
+      parameters:
+        - $ref: '#/components/parameters/productNameQueryParam'
+        - $ref: '#/components/parameters/categoryNameQueryParam'
+        - $ref: '#/components/parameters/minPriceQueryParam'
+        - $ref: '#/components/parameters/maxPriceQueryParam'
+        - $ref: '#/components/parameters/storeIdQueryParam'
+        - $ref: '#/components/parameters/pageNumberQueryParam'
+        - $ref: '#/components/parameters/pageSizeQueryParam'
+        - $ref: '#/components/parameters/sortByQueryParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/PagedResponseProductDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
   /products:
     post:
       summary: Create a Product
@@ -28,7 +54,13 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
     get:
       summary: Get a list of products
-      operationId: getProducts
+      operationId: getProductsFilter
+      parameters:
+        - $ref: '#/components/parameters/productNameQueryParam'
+        - $ref: '#/components/parameters/categoryNameQueryParam'
+        - $ref: '#/components/parameters/minPriceQueryParam'
+        - $ref: '#/components/parameters/maxPriceQueryParam'
+        - $ref: '#/components/parameters/storeIdQueryParam'
       responses:
         '200':
           $ref: '#/components/responses/ListProducts'
@@ -260,7 +292,61 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/storeId'
+    storeIdQueryParam:
+      name: storeId
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/storeId'
+    minPriceQueryParam:
+      name: minPrice
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/minPrice'
+    maxPriceQueryParam:
+      name: maxPrice
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/maxPrice'
+    productNameQueryParam:
+      name: productName
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/productName'
+    categoryNameQueryParam:
+      name: categoryName
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/categoryName'
+    pageNumberQueryParam:
+      name: pageNumberQueryParam
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/pageNumberQueryParam'
+    pageSizeQueryParam:
+      name: pageSizeQueryParam
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/pageSizeQueryParam'
+    sortByQueryParam:
+      name: sortByQueryParam
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/sortByQueryParam'
   responses:
+    PagedResponseProductDTO:
+      description: OK.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PagedResponseProductDTO'
     ListProducts:
       description: OK.
       content:
@@ -375,6 +461,26 @@ components:
                   One or more fields are invalid. See details for more information.
                 instance: 'https://api.example.com/problems/validation-error/12345'
   schemas:
+    PagedResponseProductDTO:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDTO'
+        number:
+          type: integer
+          example: 1
+        size:
+          type: integer
+          example: 25
+        totalElements:
+          type: integer
+          format: int64
+          example: 232
+        totalPages:
+          type: integer
+          example: 23
     ProductRequestDTO:
       type: object
       properties:
@@ -483,4 +589,43 @@ components:
       format: int64
       minimum: 1
       maximum: 999999999999
+      example: 1
+    maxPrice:
+      title: example
+      description: example
+      type: number
+      format: double
+      minimum: 0.01
+      maximum: 999.99
+      example: 5.99
+    minPrice:
+      title: example
+      description: example
+      type: number
+      format: double
+      minimum: 0.01
+      maximum: 999.99
+      example: 1.99
+    categoryName:
+      type: string
+      example: "Drinks"
+    productName:
+      type: string
+      example: "Drinks"
+    sortByQueryParam:
+      type: string
+      example: "productName"
+    pageNumberQueryParam:
+      title: example
+      description: example
+      type: integer
+      minimum: 1
+      maximum: 99999
+      example: 1
+    pageSizeQueryParam:
+      title: example
+      description: example
+      type: integer
+      minimum: 1
+      maximum: 99999
       example: 1

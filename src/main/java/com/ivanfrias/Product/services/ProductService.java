@@ -4,11 +4,12 @@ import com.ivanfrias.Product.exceptions.DataBaseErrorException;
 import com.ivanfrias.Product.exceptions.NotFoundException;
 import com.ivanfrias.Product.mappers.ProductEntityProductDTOMapper;
 import com.ivanfrias.Product.mappers.ProductEntityProductRequestDTOMapper;
-import com.ivanfrias.Product.model.CategoryEntity;
 import com.ivanfrias.Product.model.ProductEntity;
 import com.ivanfrias.Product.repositories.ProductRepository;
 import com.ivanfrias.products.model.ProductDTO;
 import com.ivanfrias.products.model.ProductRequestDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -55,8 +56,8 @@ public class ProductService {
         }
     }
 
-    public List<ProductDTO> getProducts() {
-        List<ProductEntity> productEntities = productRepository.findAll();
+    public List<ProductDTO> getProductsFilter(String productName, String categoryName, Double minPrice, Double maxPrice, Long storeId) {
+        List<ProductEntity> productEntities = productRepository.getProductsFilter(productName, categoryName, minPrice, maxPrice, storeId);
 
         if(CollectionUtils.isEmpty(productEntities)){
             throw new NotFoundException("No hay ningun producto registrado en la aplicación");
@@ -86,5 +87,15 @@ public class ProductService {
             throw new NotFoundException("No hay productos para la store seleccionada.");
         }
         return productEntityProductDTOMapper.productEntityListToProductDTOList(productEntities);
+    }
+
+    public Page<ProductDTO> getPagedProductsFilter(String productName, String categoryName, Double minPrice, Double maxPrice, Long storeId, Pageable pageable) {
+        Page<ProductEntity> productEntitiesPaged = (Page<ProductEntity>) productRepository.getPagedProductsFilter(productName, categoryName, minPrice, maxPrice, storeId, pageable);
+
+        if(CollectionUtils.isEmpty(productEntitiesPaged.getContent())){
+            throw new NotFoundException("No hay ningun producto registrado en la aplicación");
+        }
+
+        return productEntitiesPaged.map(productEntityProductDTOMapper::productEntityToProductDTO);
     }
 }
